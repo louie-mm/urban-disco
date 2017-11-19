@@ -2,8 +2,10 @@ from queue import Queue
 import wikipedia
 import logging
 
-ORIGIN = 'Gandhi'
-FINAL_ITERATION = 10
+logging.basicConfig(level=logging.INFO)
+
+ORIGIN = 'Gandhi (disambiguation)'
+FINAL_ITERATION = 1000
 
 bfs_queue = Queue()
 link_dictionary = {}
@@ -16,6 +18,7 @@ while iteration < FINAL_ITERATION:
         break
 
     current_subject = bfs_queue.get()
+    logging.info('Finding links for ' + current_subject)
 
     if current_subject in link_dictionary:
         logging.error('Dictionary already contains ' + current_subject + ', grabbing next item in queue.')
