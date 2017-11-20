@@ -1,31 +1,22 @@
 import wikipedia
-from wikipedia.exceptions import DisambiguationError
+import scraper_utils
 import logging
 from bfs import Bfs
 
 logging.basicConfig(level=logging.INFO)
-
 ORIGIN = 'Gandhi'
 FINAL_ITERATION = 10
+NUM_THREADS = 1
 
 bfs = Bfs()
+scraper_utils.setup(bfs, ORIGIN)
 
-iteration = 0
-current_page = wikipedia.page(ORIGIN)
-links = current_page.links
-bfs.add(ORIGIN, links)
 
-while not bfs.is_empty() and iteration < FINAL_ITERATION:
-    current_subject = bfs.get()
+thread_list = scraper_utils.do_search_threads(bfs, FINAL_ITERATION, NUM_THREADS)
+for thread in thread_list:
+    thread.start()
 
-    try:
-        current_page = wikipedia.page(current_subject)
-        logging.info('Getting new page: ' + current_subject)
-    except DisambiguationError:
-        continue
-
-    links = current_page.links
-    bfs.add(current_subject, links)
-    iteration += 1
+for thread in thread_list:
+    thread.join()
 
 bfs.print_dictionary()
